@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: testyard
+    runtime: node
+    plan: free
+    buildCommand: "echo no build step"
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      # Render puts exactly one proxy in front of the app, so trust the last X-Forwarded-For entry (rate limits rely on it).
+      - key: TRUST_PROXY_HOPS
+        value: "1"
+      # Set to your public address (e.g. https://testyard.example.com) so canonical URLs, sitemap.xml and robots.txt are correct.
+      # Without it, Render's own RENDER_EXTERNAL_URL is used.
+      - key: SITE_URL
+        sync: false

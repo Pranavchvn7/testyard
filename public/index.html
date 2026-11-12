@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!--SEO_HEAD-->
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="stylesheet" href="/css/app.css" />
+  <script src="/js/config.js"></script>
+  <script src="/js/boot.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="shell">
+    <aside class="side" id="side" aria-label="Practice navigation">
+      <a class="brand" href="/" data-testid="brand">
+        <span class="brand-mark" aria-hidden="true">✓</span>
+        <span><b>TestYard</b><small>automation practice</small></span>
+      </a>
+      <div class="search">
+        <input id="nav-search" data-testid="nav-search" type="search" placeholder="Search pages…  ( / )" aria-label="Search pages" autocomplete="off" />
+      </div>
+      <nav id="nav" data-testid="nav"><!--SEO_NAV--></nav>
+      <div class="side-foot">
+        <button class="linkish" id="reset-progress" data-testid="reset-progress" type="button">Reset progress</button>
+        <a href="https://github.com/" id="gh-link" target="_blank" rel="noopener">Open source · MIT</a>
+      </div>
+    </aside>
+    <div class="scrim" id="scrim"></div>
+    <div class="main-col">
+      <header class="top">
+        <button class="icon-btn menu-btn" id="menu-btn" type="button" aria-label="Open navigation" data-testid="menu-btn">☰</button>
+        <div class="crumbs" id="crumbs" aria-live="polite"></div>
+        <div class="top-actions">
+          <span class="pill" id="api-status" data-testid="api-status" title="API connection">API …</span>
+          <button class="icon-btn" id="theme-btn" type="button" aria-label="Toggle dark mode" data-testid="theme-toggle">◐</button>
+        </div>
+      </header>
+      <main id="main" tabindex="-1"><!--SEO_MAIN--></main>
+    </div>
+  </div>
+  <div id="toasts" role="status" aria-live="polite"></div>
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>

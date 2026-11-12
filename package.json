@@ -1,0 +1,16 @@
+{
+  "name": "testyard",
+  "version": "1.0.0",
+  "description": "A free, open-source playground for practising QA automation: web elements, demo apps, a sandboxed REST API and framework starters.",
+  "private": false,
+  "type": "module",
+  "license": "MIT",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node --test tests/api.test.js tests/security.test.js",
+    "test:e2e": "node --test tests/e2e.test.js"
+  },
+  "keywords": ["qa", "test-automation", "selenium", "playwright", "cypress", "api-testing", "practice"]
+}
