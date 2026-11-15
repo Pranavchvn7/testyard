@@ -248,7 +248,7 @@ route("GET", "/api/slow-image", "Utilities", "SVG image that loads slowly. ms=0.
   const ms = Math.min(10000, Math.max(0, Number(query.ms) || 2000));
   if (!(await slow(ip, ms))) return tooMany(2, "Too many concurrent slow requests (max 5 per IP)");
   const label = String(query.label || `loaded after ${ms} ms`).replace(/[<>&"]/g, "").slice(0, 40);
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="320" height="140"><rect width="100%" height="100%" fill="#e8481c"/><text x="50%" y="54%" fill="#fff" font-family="monospace" font-size="18" text-anchor="middle">${label}</text></svg>`;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="320" height="140"><rect width="100%" height="100%" fill="#4338ca"/><text x="50%" y="54%" fill="#fff" font-family="monospace" font-size="18" text-anchor="middle">${label}</text></svg>`;
   return { status: 200, headers: { "Content-Type": "image/svg+xml", "Cache-Control": "no-store" }, text: svg };
 });
 

@@ -219,6 +219,39 @@ test("dynamic and flaky labs: lazy list, polling job and type-ahead", { skip }, 
   await p.context().close();
 });
 
+test("home page guides users: finder, learning paths and quick start", { skip }, async () => {
+  const p = await open("");
+  await tid(p, "home-search").fill("iframe");
+  await tid(p, "home-hit").first().waitFor();
+  assert.ok((await tid(p, "home-hit").count()) > 0);
+  await tid(p, "chip-flaky").click();
+  assert.equal(await tid(p, "home-search").inputValue(), "flaky");
+  await tid(p, "path-tab-playwright").click();
+  assert.equal(await tid(p, "path-step-playwright-assertions").count(), 1);
+  await tid(p, "qs-tab-selenium").click();
+  assert.match(await tid(p, "qs-code").textContent(), /selenium/);
+  await tid(p, "path-next").click();
+  await p.waitForURL(/\/practice\/locators/);
+  assert.deepEqual(p.errors, []);
+  await p.context().close();
+});
+
+test("both colour themes keep text readable", { skip }, async () => {
+  for (const scheme of ["light", "dark"]) {
+    const ctx = await browser.newContext({ colorScheme: scheme });
+    const p = await ctx.newPage();
+    await p.goto(URL + "/practice/inputs");
+    const ratio = await p.evaluate(() => {
+      const lum = (c) => { const [r, g, b] = c.match(/\d+(\.\d+)?/g).slice(0, 3).map((v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+      const text = lum(getComputedStyle(document.querySelector("main p")).color), bg = lum(getComputedStyle(document.body).backgroundColor);
+      const [a, b] = text > bg ? [text, bg] : [bg, text];
+      return (a + 0.05) / (b + 0.05);
+    });
+    assert.ok(ratio >= 4.5, `${scheme} theme paragraph contrast ${ratio.toFixed(2)}`);
+    await ctx.close();
+  }
+});
+
 test("API console sends a request", { skip }, async () => {
   const p = await open("api-console");
   await tid(p, "c-url").fill("/api/status/418");

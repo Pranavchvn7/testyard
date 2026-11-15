@@ -165,7 +165,7 @@ if (!customElements.get("ty-card")) {
     connectedCallback() {
       if (this.shadowRoot) return;
       const r = this.attachShadow({ mode: "open" });
-      r.innerHTML = `<style>.c{border:1px solid #bbb;border-radius:10px;padding:14px;font:15px system-ui;background:#fff;color:#111}input{padding:7px;border:1px solid #bbb;border-radius:6px;width:60%}button{padding:7px 12px;border-radius:6px;border:0;background:#e8481c;color:#fff;cursor:pointer}</style>
+      r.innerHTML = `<style>.c{border:1px solid #bbb;border-radius:10px;padding:14px;font:15px system-ui;background:#fff;color:#111}input{padding:7px;border:1px solid #bbb;border-radius:6px;width:60%}button{padding:7px 12px;border-radius:6px;border:0;background:#4338ca;color:#fff;cursor:pointer}</style>
         <div class="c"><h4 id="shadow-title" style="margin:0 0 8px">${this.getAttribute("label") || "Shadow card"}</h4><input id="shadow-input" placeholder="inside shadow root"> <button id="shadow-btn">Go</button><p id="shadow-out" style="margin:8px 0 0">Result: —</p><slot></slot></div>`;
       r.getElementById("shadow-btn").addEventListener("click", () => (r.getElementById("shadow-out").textContent = "Result: " + r.getElementById("shadow-input").value));
     }
@@ -287,7 +287,7 @@ page({
     const mk = (tag, attrs, text) => { const e = document.createElementNS(NS, tag); for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v); if (text) e.textContent = text; svg.append(e); return e; };
     [["red", "#c42b2b", 60], ["green", "#1d7f55", 140], ["blue", "#2457c5", 220]].forEach(([n, c, x]) => { const e = mk("circle", { id: "circle-" + n, cx: x, cy: 70, r: 32, fill: c, "data-testid": "circle-" + n, style: "cursor:pointer" }); e.addEventListener("click", () => (out.textContent = "Clicked: " + n + " circle")); });
     const rect = mk("rect", { id: "toggle-rect", x: 300, y: 38, width: 90, height: 64, rx: 10, fill: "#9a6408", "data-testid": "svg-rect", style: "cursor:pointer" });
-    rect.addEventListener("click", () => rect.setAttribute("fill", rect.getAttribute("fill") === "#9a6408" ? "#e8481c" : "#9a6408"));
+    rect.addEventListener("click", () => rect.setAttribute("fill", rect.getAttribute("fill") === "#9a6408" ? "#4338ca" : "#9a6408"));
     mk("text", { id: "svg-label", x: 210, y: 140, "text-anchor": "middle", fill: "currentColor", "font-size": 16 }, "SVG label text");
     root.append(stage(svg, out));
   },

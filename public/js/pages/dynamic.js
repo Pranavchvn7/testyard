@@ -146,7 +146,7 @@ page({
     const labels = shuffle(["foo", "bar", "baz"]);
     const cls = shuffle(["", "alert", "success"]);
     const answer = h("canvas", { width: 220, height: 50, "data-testid": "answer-canvas", role: "img", "aria-label": "Answer canvas" });
-    const draw = () => { const c = answer.getContext("2d"); c.clearRect(0, 0, 220, 50); c.fillStyle = "#e8481c"; c.font = "bold 26px monospace"; c.fillText("Answer: " + rand(10000, 99999), 8, 34); };
+    const draw = () => { const c = answer.getContext("2d"); c.clearRect(0, 0, 220, 50); c.fillStyle = "#4338ca"; c.font = "bold 26px monospace"; c.fillText("Answer: " + rand(10000, 99999), 8, 34); };
     draw();
     const bs = labels.map((l, i) => h("button", { class: "btn " + (cls[i] === "alert" ? "danger" : cls[i] === "success" ? "primary" : ""), type: "button", id: "ch-" + Math.random().toString(36).slice(2, 7), "data-testid": "ch-" + l, onClick: () => { const nl = shuffle(["foo", "bar", "baz"]); $$(".ch-btn", root).forEach((b, k) => { b.textContent = nl[k]; b.id = "ch-" + Math.random().toString(36).slice(2, 7); }); draw(); } }, l));
     bs.forEach((b) => b.classList.add("ch-btn"));

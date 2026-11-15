@@ -37,7 +37,7 @@ function head({ origin, title, description, canonicalPath, noindex, ld }) {
     `<meta name="description" content="${esc(description)}">`,
     `<link rel="canonical" href="${esc(abs)}">`,
     `<meta name="robots" content="${noindex ? "noindex,follow" : "index,follow,max-image-preview:large"}">`,
-    `<meta name="theme-color" content="#e8481c">`,
+    `<meta name="theme-color" content="#4338ca">`,
     `<meta property="og:type" content="website"><meta property="og:site_name" content="${SITE_NAME}">`,
     `<meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(description)}">`,
     `<meta property="og:url" content="${esc(abs)}"><meta property="og:image" content="${esc(img)}">`,

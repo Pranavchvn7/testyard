@@ -1,6 +1,7 @@
 import { $, $$, h, store, toast, api } from "./ui.js";
-import { INTRO, FAQ, HOME_TITLE, homeDescription, pageTitle, pageDescription } from "./content.js";
+import { HOME_TITLE, homeDescription, pageTitle, pageDescription } from "./content.js";
 import { GROUPS, pages } from "./registry.js";
+import { home as renderHome } from "./home.js";
 import "./pages/elements.js";
 import "./pages/elements2.js";
 import "./pages/tables.js";
@@ -75,34 +76,6 @@ function frame(def) {
   return { wrap, body };
 }
 
-function home() {
-  const total = visible().length;
-  const doneCount = visible().filter((p) => done.has(p.id)).length;
-  const el = h("div", { "data-testid": "page-home" },
-    h("section", { class: "hero" },
-      h("div", { class: "eyebrow", text: "Free · open source · no sign-up" }),
-      h("h1", {}, "Free QA practice website for ", h("em", { text: "test automation" })),
-      h("p", { text: INTRO }),
-      h("div", { class: "row" },
-        h("a", { class: "btn primary", href: "/practice/inputs", "data-testid": "start-btn" }, "Start with web elements"),
-        h("a", { class: "btn", href: "/practice/api-docs", "data-testid": "start-api" }, "Explore the API"),
-        h("a", { class: "btn", href: "/practice/frameworks", "data-testid": "start-fw" }, "Build a framework")),
-      h("div", { class: "stat" },
-        h("div", {}, h("b", { text: String(total), "data-testid": "stat-pages" }), h("span", { text: "practice pages" })),
-        h("div", {}, h("b", { text: String(doneCount), "data-testid": "stat-done" }), h("span", { text: "practiced" })),
-        h("div", {}, h("b", { text: String(GROUPS.length) }), h("span", { text: "categories" })))),
-    h("div", { class: "cards" }, GROUPS.map((g) => {
-      const list = visible().filter((p) => p.group === g.id);
-      const n = list.filter((p) => done.has(p.id)).length;
-      return h("a", { class: "card", href: "/practice/" + list[0].id, "data-testid": "card-" + g.id },
-        h("h3", { text: g.title }), h("p", { text: g.blurb }),
-        h("div", { class: "bar", role: "progressbar", "aria-valuenow": String(n), "aria-valuemax": String(list.length) }, h("i", { style: { width: (list.length ? (n / list.length) * 100 : 0) + "%" } })),
-        h("small", { class: "muted", text: `${n} / ${list.length} practiced` }));
-    })),
-    h("section", { style: { marginTop: "44px" } }, h("h2", { text: "Frequently asked questions" }), FAQ.map(([q, a]) => h("div", {}, h("h3", { text: q }), h("p", { class: "muted", text: a })))));
-  return el;
-}
-
 function setMeta(title, description, path) {
   document.title = title;
   const set = (sel, attr, val) => document.querySelector(sel)?.setAttribute(attr, val);
@@ -127,7 +100,7 @@ function route() {
   $("#crumbs").textContent = "";
   const robots = document.querySelector('meta[name="robots"]');
   if (robots && !def && !isHome) robots.content = "noindex,follow";
-  if (isHome) { $("#crumbs").textContent = "Home"; main.append(home()); setMeta(HOME_TITLE, homeDescription(visible().length), "/"); }
+  if (isHome) { $("#crumbs").textContent = "Home"; main.append(renderHome({ pages, groups: GROUPS, done })); setMeta(HOME_TITLE, homeDescription(visible().length), "/"); }
   else if (!def) {
     main.append(h("div", { "data-testid": "page-404" }, h("h1", { text: "Page not found" }), h("p", { text: "There is no page at this address." }), h("a", { class: "btn primary", href: "/" }, "Back home")));
     document.title = "Page not found | TestYard";

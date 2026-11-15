@@ -3,8 +3,8 @@ import { h, $, $$, copy, store, toast } from "../ui.js";
 import { evaluate, describeNode, suggest } from "../locator-engine.js";
 import { CATEGORIES, scenarios } from "./locator-scenarios.js";
 
-const FRAME_CSS = "body{font:14px/1.5 system-ui,sans-serif;margin:12px;color:#17181c;background:#fff}button,input,select,textarea{font:inherit}button{padding:5px 10px;margin:2px}input,select{padding:4px 6px;margin:2px}li,p,td,th,label{margin:2px}table{border-collapse:collapse}td,th{border:1px solid #ccc;padding:4px 8px}.card{display:inline-block;border:1px solid #ccc;border-radius:8px;padding:8px 12px;margin:4px;vertical-align:top}.badge{background:#e8481c;color:#fff;border-radius:4px;padding:0 6px;font-size:12px}a{color:#2457c5}iframe{background:#fff}";
-const HIT = "3px solid #e8481c";
+const FRAME_CSS = "body{font:14px/1.5 system-ui,sans-serif;margin:12px;color:#17181c;background:#fff}button,input,select,textarea{font:inherit}button{padding:5px 10px;margin:2px}input,select{padding:4px 6px;margin:2px}li,p,td,th,label{margin:2px}table{border-collapse:collapse}td,th{border:1px solid #ccc;padding:4px 8px}.card{display:inline-block;border:1px solid #ccc;border-radius:8px;padding:8px 12px;margin:4px;vertical-align:top}.badge{background:#4338ca;color:#fff;border-radius:4px;padding:0 6px;font-size:12px}a{color:#2457c5}iframe{background:#fff}";
+const HIT = "3px solid #4338ca";
 const GOAL = "3px dashed #1d7f55";
 
 const KITCHEN = `<div id="sample" class="shop">
@@ -73,7 +73,7 @@ function targetNodes(s, doc) {
 
 page({
   id: "locators", group: "dom", title: "Locator Lab",
-  blurb: "One workbench for CSS, XPath, axes and Playwright locators: 80+ tricky scenarios with live match checking.",
+  blurb: "One workbench for CSS, XPath, axes and Playwright locators: 95+ tricky scenarios with live match checking.",
   tasks: [
     "Solve one scenario in every category: CSS, XPath, XPath axes and Playwright built-in locators.",
     "Write the same locator three ways (CSS, XPath, getByRole) and compare how robust each is.",
