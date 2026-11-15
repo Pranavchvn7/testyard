@@ -13,9 +13,9 @@
 ![API routes](https://img.shields.io/badge/API%20routes-45-0e7490?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-64748b?style=flat-square)
 
-[Quick start](#quick-start) · [What you can practise](#what-you-can-practise) · [Learning paths](#learning-paths) · [Locator Lab](#locator-lab) · [API](#the-api) · [Deploy](#deploy-for-free) · [Architecture](#architecture) · [Contributing](#contributing)
+[Quick start](#quick-start) · [What you can practise](#what-you-can-practise) · [Learning paths](#learning-paths) · [Locator Lab](#locator-lab) · [API](#the-api) · [How to use it](#how-to-use-it-effectively) · [Architecture](#architecture) · [Security](#security) · [Contributing](#contributing)
 
-**Live demo:** `<add your deployed URL here>` (see [Deploy](#deploy-for-free))
+**Live demo:** `<add your deployed URL here>`
 
 </div>
 
@@ -101,6 +101,29 @@ The Home page tracks your progress on each path (stored in your browser). Pick t
 | **Flaky test hunter** | Stabilising suites | Diagnosis guide, flaky lab, network and state/time flakiness, type-ahead race, polling, clock |
 | **SDET and framework builder** | Framework and CI design | 22-step roadmap, locator strategy, CI pipeline, GitHub Actions, Docker reports, pipeline builder |
 
+## How to use it effectively
+
+**First 15 minutes**
+1. Run the app and open **Home**. Pick the learning path that matches your goal and follow it step by step; ticks are saved in your browser.
+2. Copy the **quick-start snippet** for your tool and run it against your own address to confirm your setup works.
+3. Open any practice page and read its **practice tasks**. Each one is a small, concrete automation goal.
+
+**A practice loop that works**
+1. Write the automation for one task using only stable hooks (`data-testid`, roles, labels). Avoid sleeps.
+2. Break your own test on purpose: slow the network, reload mid-test, run it 20 times. Fix what turns flaky.
+3. Re-do it with a second tool (for example Playwright, then Selenium) and compare how each handles waiting and locators.
+4. Move the working test into the starter under [`frameworks/`](frameworks), then wire it into CI with the pipeline builder.
+
+**Where to go when you are stuck**
+
+| Problem | Go to |
+|---|---|
+| Can't find the right locator | Locator Lab, then the locator cheat sheet |
+| Test passes sometimes | Flaky lab and the flaky diagnosis guide |
+| Element appears late or changes | Dynamic and timing pages |
+| Need a backend to test | API lab, request console and sandboxes |
+| Not sure how to structure a project | 22-step framework roadmap |
+
 ## Locator Lab
 
 One place to practise every kind of locator: **CSS, XPath (functions and axes), Playwright selector strings and the `getBy*` API** including `filter`, `and`/`or`, `nth`, `frameLocator` and shadow piercing.
@@ -178,52 +201,9 @@ page({
 * Features to test against: CRUD, pagination, bearer auth, OTP with lockout, account deletion, validation errors, `204`/`400`/`401`/`404`/`405`/`409`/`413`/`429`, `Retry-After`, redirects, delays, flaky responses, file upload/download, Basic auth.
 * Limits: 600 requests/minute per IP, 60 sign-up/login calls/minute per IP, 10 failed logins per account per minute, 100 KB JSON bodies, 1 MB per uploaded file.
 
-## Deploy for free
-
-TestYard is one small Node process that serves the UI, the API **and the server-rendered pages search engines read**. Pick any host that runs Node or Docker.
-
-### Option A: Render (easiest, free web service)
-1. Push this repo to GitHub.
-2. In Render: **New → Blueprint** (it reads `render.yaml`), pick the repo, and deploy.
-3. If you use a custom domain, set the `SITE_URL` environment variable to it (for example `https://testyard.example.com`). Without it Render's own URL is used.
-4. Free instances sleep after inactivity, so the first request can take ~30 s. Practice data resets on restart.
-
-### Option B: Any Docker host (Fly.io, Railway, Google Cloud Run, a VPS…)
-```bash
-docker build -t testyard .
-docker run -p 3000:3000 -e TRUST_PROXY_HOPS=1 -e SITE_URL=https://your-domain.example testyard
-```
-Set `TRUST_PROXY_HOPS` to the number of reverse proxies in front of the container (`0` if none). It decides which `X-Forwarded-For` entry is trusted, and the rate limits depend on it.
-
-### Not recommended
-* **Static-only hosting** (GitHub Pages, plain Netlify): the clean `/practice/...` URLs, per-page SEO tags, sitemap and security headers are produced by the Node server.
-* **Serverless platforms** (Vercel, Netlify Functions) for the API: its sandboxes live in memory, which serverless instances do not keep.
-
-### Configuration
-
-Everything is optional; see [`.env.example`](.env.example).
-
-| Variable | Purpose |
-|---|---|
-| `SITE_URL` | Public origin, used for canonical URLs, `sitemap.xml`, `robots.txt` and social previews |
-| `TRUST_PROXY_HOPS` | Reverse proxies in front of the app (`1` on Render/Fly/Railway) |
-| `CORS_ORIGIN` | Comma-separated origins allowed to call the API (default `*`) |
-| `API_ORIGIN` | Only if the UI and API are on different hosts (extends the CSP `connect-src`) |
-| `GOOGLE_SITE_VERIFICATION`, `BING_SITE_VERIFICATION` | Webmaster-tool verification tokens |
-
 ## Security
 
 TestYard ships hardened: strict Content-Security-Policy with no inline scripts, `X-Frame-Options`, HSTS, scrypt password hashing, per-IP and per-account rate limits, request-size caps, generic error responses with correlation ids, and no runtime dependencies. Some behaviours are deliberately weak because they are the thing being practised; they are listed in [SECURITY.md](SECURITY.md), together with how to report a vulnerability. **Never enter real personal data.**
-
-## Getting found on Google
-
-The site is built to be crawlable: every practice page has a real URL (`/practice/<page>`), its own title, description, canonical link, Open Graph tags and structured data, all in the initial HTML, plus `sitemap.xml` and `robots.txt`. After deploying:
-
-1. Set `SITE_URL` to your final address.
-2. Verify the site in [Google Search Console](https://search.google.com/search-console) and [Bing Webmaster Tools](https://www.bing.com/webmasters) (use the `*_SITE_VERIFICATION` variables), then submit `/sitemap.xml`.
-3. Use a short, memorable domain and 301-redirect any other hostname to it.
-4. Fill in your GitHub repository's *About* box and add topics such as `qa`, `test-automation`, `selenium`, `playwright`, `cypress`, `api-testing`, `practice-website`, then link the live site there.
-5. Earn links: submit to lists such as awesome-test-automation, and share walkthroughs on Dev.to, Reddit (r/QualityAssurance, r/softwaretesting), LinkedIn and YouTube. Rankings for competitive searches depend mostly on links and useful content and take weeks to months.
 
 ## Contributing
 
