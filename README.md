@@ -15,7 +15,7 @@
 
 [Quick start](#quick-start) · [What you can practise](#what-you-can-practise) · [Learning paths](#learning-paths) · [Locator Lab](#locator-lab) · [API](#the-api) · [How to use it](#how-to-use-it-effectively) · [Architecture](#architecture) · [Security](#security) · [Contributing](#contributing)
 
-**Live demo:** `<add your deployed URL here>`
+**Live demo:** `https://testyard.onrender.com/`
 
 </div>
 
