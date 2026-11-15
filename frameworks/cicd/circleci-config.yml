@@ -1,0 +1,40 @@
+# CircleCI: official Playwright Docker image, sharding with parallelism, test results tab.
+version: 2.1
+executors:
+  playwright:
+    docker:
+      - image: mcr.microsoft.com/playwright:v1.49.1-noble
+    working_directory: ~/project
+jobs:
+  e2e:
+    executor: playwright
+    parallelism: 3
+    environment:
+      BASE_URL: https://YOUR-TESTYARD-URL
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - 'npm-{{ checksum "package-lock.json" }}'
+      - run: npm ci
+      - save_cache:
+          key: 'npm-{{ checksum "package-lock.json" }}'
+          paths: [~/.npm]
+      - run:
+          name: Run this container's shard
+          command: npx playwright test --shard=$((CIRCLE_NODE_INDEX + 1))/$CIRCLE_NODE_TOTAL --reporter=junit,html
+      - store_test_results:
+          path: results
+      - store_artifacts:
+          path: playwright-report
+workflows:
+  e2e:
+    jobs: [e2e]
+  nightly:
+    triggers:
+      - schedule:
+          cron: "30 20 * * *"
+          filters:
+            branches:
+              only: [main]
+    jobs: [e2e]

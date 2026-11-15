@@ -9,7 +9,7 @@ globalThis.customElements ??= { get: () => true, define() {} }; // page modules 
 const pub = path.join(path.dirname(fileURLToPath(import.meta.url)), "public");
 const load = (rel) => import(pathToFileURL(path.join(pub, rel)).href);
 const { GROUPS, pages } = await load("js/registry.js");
-for (const f of ["elements", "elements2", "tables", "dynamic", "apps", "api", "learn"]) await load(`js/pages/${f}.js`);
+for (const f of ["elements", "elements2", "tables", "dynamic", "apps", "api", "learn", "locator-lab", "cheatsheets", "flaky-lab", "dynamic-lab", "playwright", "cicd"]) await load(`js/pages/${f}.js`);
 const { INTRO, FAQ, SITE_NAME, clip, HOME_TITLE, homeDescription, pageTitle, pageDescription } = await load("js/content.js");
 
 const TEMPLATE = fs.readFileSync(path.join(pub, "index.html"), "utf8");

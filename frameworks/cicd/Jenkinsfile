@@ -1,0 +1,37 @@
+// Declarative pipeline: Docker agent, parallel browser stages, JUnit + HTML report publishing.
+pipeline {
+  agent none
+  options { timeout(time: 30, unit: 'MINUTES'); timestamps(); buildDiscarder(logRotator(numToKeepStr: '30')) }
+  triggers { cron('H 2 * * 1-5') }   // nightly; PR builds come from a multibranch job
+  parameters {
+    string(name: 'BASE_URL', defaultValue: 'https://YOUR-TESTYARD-URL', description: 'Site under test')
+    string(name: 'GREP', defaultValue: '', description: 'Only run tests matching this text, e.g. @smoke')
+  }
+  stages {
+    stage('Test') {
+      parallel {
+        stage('chromium') {
+          agent { docker { image 'mcr.microsoft.com/playwright:v1.49.1-noble'; args '--ipc=host' } }
+          environment { BASE_URL = "${params.BASE_URL}"; HOME = "${WORKSPACE}" }
+          steps {
+            sh 'npm ci'
+            sh 'npx playwright test --project=chromium --grep "${GREP}" --reporter=junit,html'
+          }
+          post { always { junit 'results/junit.xml'; archiveArtifacts artifacts: 'playwright-report/**,test-results/**', allowEmptyArchive: true } }
+        }
+        stage('firefox') {
+          agent { docker { image 'mcr.microsoft.com/playwright:v1.49.1-noble'; args '--ipc=host' } }
+          environment { BASE_URL = "${params.BASE_URL}"; HOME = "${WORKSPACE}" }
+          steps {
+            sh 'npm ci'
+            sh 'npx playwright test --project=firefox --grep "${GREP}" --reporter=junit,html'
+          }
+          post { always { junit 'results/junit.xml'; archiveArtifacts artifacts: 'playwright-report/**,test-results/**', allowEmptyArchive: true } }
+        }
+      }
+    }
+  }
+  post {
+    failure { echo 'E2E failed: notify the team (Slack, Teams or email plugin).' }
+  }
+}

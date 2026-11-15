@@ -1,0 +1,28 @@
+# API tests: run a Postman collection with Newman, publish JUnit results.
+name: api-newman
+on:
+  pull_request:
+  schedule:
+    - cron: "0 */6 * * *"
+jobs:
+  api:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install -g newman newman-reporter-htmlextra
+      - name: Run collection
+        run: >
+          newman run postman/testyard.postman_collection.json
+          --env-var baseUrl=${{ vars.BASE_URL || 'https://YOUR-TESTYARD-URL' }}
+          --env-var sandbox=gh-${{ github.run_id }}
+          --reporters cli,junit,htmlextra
+          --reporter-junit-export results/newman.xml
+          --reporter-htmlextra-export results/newman.html
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: newman-results
+          path: results

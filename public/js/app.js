@@ -8,6 +8,12 @@ import "./pages/dynamic.js";
 import "./pages/apps.js";
 import "./pages/api.js";
 import "./pages/learn.js";
+import "./pages/locator-lab.js";
+import "./pages/cheatsheets.js";
+import "./pages/flaky-lab.js";
+import "./pages/dynamic-lab.js";
+import "./pages/playwright.js";
+import "./pages/cicd.js";
 
 const main = $("#main");
 const nav = $("#nav");

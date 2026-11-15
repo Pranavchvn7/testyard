@@ -1,0 +1,8 @@
+# Container that runs the Playwright suite. Pin the tag to your exact @playwright/test version.
+FROM mcr.microsoft.com/playwright:v1.49.1-noble
+WORKDIR /e2e
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY . .
+ENV CI=1 BASE_URL=https://YOUR-TESTYARD-URL
+CMD ["npx", "playwright", "test"]

@@ -183,6 +183,38 @@ route("GET", "/api/flaky", "Utilities", "Randomly fails. failRate=0..1 (default 
   return Math.random() < rate ? fail(503, "Flaky failure (try again)") : ok(200, "Flaky success");
 });
 
+// --- Async practice helpers (used by the Dynamic loading and Flaky labs)
+route("POST", "/api/jobs", "Utilities", "Start a background job that finishes after durationMs (500-20000). Poll GET /api/jobs/:id", { body: { durationMs: 4000 }, codes: [202, 400] }, ({ box, body }) => {
+  const d = Number(body?.durationMs ?? 4000);
+  if (!Number.isFinite(d) || d < 500 || d > 20000) return fail(400, "durationMs must be between 500 and 20000");
+  box.jobs ??= new Map();
+  if (box.jobs.size >= 50) box.jobs.delete(box.jobs.keys().next().value);
+  const id = crypto.randomUUID().slice(0, 8);
+  box.jobs.set(id, { start: Date.now(), d });
+  return ok(202, "Job accepted", { id, status: "running", progress: 0 });
+});
+route("GET", "/api/jobs/:id", "Utilities", "Poll a job: status running|done, progress 0-100", { codes: [200, 404] }, ({ box, params }) => {
+  const j = box.jobs?.get(params.id);
+  if (!j) return fail(404, "Job not found");
+  const progress = Math.min(100, Math.floor(((Date.now() - j.start) / j.d) * 100));
+  return ok(200, progress >= 100 ? "Job finished" : "Job running", { id: params.id, status: progress >= 100 ? "done" : "running", progress });
+});
+route("GET", "/api/search", "Utilities", "Type-ahead search with latency that shrinks as the query grows (older, shorter queries answer LATER: a race condition). q required", { query: [["q", "search text"]], codes: [200, 400] }, async ({ query, ip }) => {
+  const q = String(query.q ?? "").trim().toLowerCase().slice(0, 40);
+  if (!q) return fail(400, "q is required");
+  const wait = Math.max(100, 1200 - q.length * 250);
+  if (!(await slow(ip, wait))) return tooMany(2, "Too many concurrent slow requests (max 5 per IP)");
+  const words = ["selenium", "playwright", "cypress", "appium", "postman", "jmeter", "testng", "pytest", "junit", "cucumber", "allure", "jenkins", "docker", "github actions", "sonarqube", "k6"];
+  return ok(200, "Search results", { q, tookMs: wait, results: words.filter((w) => w.includes(q)).slice(0, 6) });
+});
+route("GET", "/api/feed", "Utilities", "Paged feed for lazy-load practice. page (1-10), size (1-20), delay ms (0-3000)", { query: [["page", "1-10"], ["size", "1-20, default 6"], ["delay", "0-3000"]], codes: [200, 400] }, async ({ query, ip }) => {
+  const page = Math.floor(Number(query.page ?? 1)), size = Math.floor(Number(query.size ?? 6)), delay = Math.min(3000, Math.max(0, Number(query.delay ?? 0) || 0));
+  if (!(page >= 1 && page <= 10) || !(size >= 1 && size <= 20)) return fail(400, "page must be 1-10 and size 1-20");
+  if (delay && !(await slow(ip, delay))) return tooMany(2, "Too many concurrent slow requests (max 5 per IP)");
+  const items = Array.from({ length: size }, (_, i) => { const n = (page - 1) * size + i + 1; return { id: n, title: `Feed item ${n}`, body: `Lazy-loaded content block number ${n}.` }; });
+  return ok(200, "Feed page", { page, size, hasMore: page < 10, items });
+});
+
 route("GET", "/api/random", "Utilities", "Random number, uuid and timestamp", { codes: [200] }, () =>
   ok(200, "Random values", { number: Math.floor(Math.random() * 1000), uuid: crypto.randomUUID(), at: new Date().toISOString() }));
 

@@ -131,6 +131,7 @@ const server = http.createServer(async (req, res) => {
     if (pathname === "/practice" || pathname === "/practice/") return redirect(req, res, "/");
     if (pathname.startsWith("/practice/")) {
       const id = pathname.slice("/practice/".length);
+      if (id === "selector-tester") return redirect(req, res, "/practice/locators?tab=sandbox"); // merged into the Locator Lab
       if (id.endsWith("/")) return redirect(req, res, "/practice/" + id.replace(/\/+$/, ""));
       return pageExists(id) ? html(req, res, 200, renderPage(id, origin)) : html(req, res, 404, renderNotFound(origin));
     }

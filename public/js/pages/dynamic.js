@@ -167,22 +167,3 @@ page({
     root.append(stage(h("h2", { text: "Deep tree" }), h("div", { class: "scroll-box", style: { height: "140px" } }, node)), stage(h("h2", { text: "Large table" }), h("div", { class: "scroll-box", style: { height: "320px", padding: 0 } }, tbl)));
   },
 });
-
-// ---------------------------------------------------------------- locator playground
-page({
-  id: "locators", group: "dom", title: "Locator playground",
-  blurb: "One compact page full of attribute variety: ids, names, classes, ARIA, data-testid, text, nested lists and siblings.",
-  tasks: ["Locate the same “Sign in” button 8 ways: id, name, CSS, XPath, role, text, testid, label.", "Select the 3rd item of the nested list with nth-child and with text.", "Find the input next to the label “Username” via following-sibling.", "Pick the single enabled radio with a CSS :not selector."],
-  render(root) {
-    root.append(stage(
-      h("form", { id: "login-form", class: "login form-main", "data-testid": "locator-form", onSubmit: (e) => { e.preventDefault(); toast("Signed in (practice)", "ok"); } },
-        h("div", { class: "grid g2" },
-          h("div", { class: "field" }, h("label", { for: "username", text: "Username" }), h("input", { id: "username", name: "user_name", type: "text", class: "input primary-input", placeholder: "Enter username", "data-testid": "username" })),
-          h("div", { class: "field" }, h("label", { for: "pwd", text: "Password" }), h("input", { id: "pwd", name: "pass", type: "password", class: "input", "aria-label": "Password field" }))),
-        h("button", { id: "signin", name: "signin", class: "btn primary submit-btn", type: "submit", "data-testid": "signin", "aria-label": "Sign in" }, "Sign in")),
-      h("hr"),
-      h("div", { class: "grid g2" },
-        h("ul", { id: "menu-list", class: "nested", "data-testid": "nested" }, h("li", { text: "One" }), h("li", { text: "Two" }), h("li", {}, "Three", h("ul", {}, h("li", { text: "Three-A" }), h("li", { text: "Three-B", class: "target" }))), h("li", { text: "Four" })),
-        h("div", { role: "radiogroup" }, ["Alpha", "Beta", "Gamma"].map((x, i) => h("label", { class: "check" }, h("input", { type: "radio", name: "grp", value: x, disabled: i !== 1 }), x))))));
-  },
-});

@@ -1,0 +1,45 @@
+# Local or CI stack: TestYard + Playwright tests + a Selenium Grid (Chrome and Firefox nodes).
+# Run:  docker compose up --build --abort-on-container-exit --exit-code-from e2e e2e
+services:
+  testyard:
+    build: ../..
+    environment:
+      PORT: "3000"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 5s
+      retries: 12
+  e2e:
+    build:
+      context: ../playwright
+      dockerfile: ../cicd/Dockerfile.tests
+    depends_on:
+      testyard:
+        condition: service_healthy
+    environment:
+      BASE_URL: http://testyard:3000
+    volumes:
+      - ./out/playwright-report:/e2e/playwright-report
+      - ./out/test-results:/e2e/test-results
+  selenium-hub:
+    image: selenium/hub:4.25.0
+    ports: ["4444:4444"]
+    profiles: [grid]
+  chrome:
+    image: selenium/node-chrome:4.25.0
+    shm_size: 2gb
+    depends_on: [selenium-hub]
+    environment:
+      SE_EVENT_BUS_HOST: selenium-hub
+      SE_EVENT_BUS_PUBLISH_PORT: "4442"
+      SE_EVENT_BUS_SUBSCRIBE_PORT: "4443"
+    profiles: [grid]
+  firefox:
+    image: selenium/node-firefox:4.25.0
+    shm_size: 2gb
+    depends_on: [selenium-hub]
+    environment:
+      SE_EVENT_BUS_HOST: selenium-hub
+      SE_EVENT_BUS_PUBLISH_PORT: "4442"
+      SE_EVENT_BUS_SUBSCRIBE_PORT: "4443"
+    profiles: [grid]

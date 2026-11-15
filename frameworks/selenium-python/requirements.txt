@@ -1,0 +1,5 @@
+selenium>=4.25
+pytest>=8
+pytest-xdist>=3.6
+pytest-html>=4.1
+requests>=2.32

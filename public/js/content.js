@@ -21,6 +21,7 @@ export const GROUP_SUFFIX = {
   tables: "Table Testing",
   dynamic: "Waits & Flaky Tests",
   dom: "Locators & XPath",
+  playwright: "Playwright Practice",
   apps: "E2E Test Practice",
   api: "API Testing",
   learn: "Automation Framework",

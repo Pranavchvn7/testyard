@@ -155,13 +155,67 @@ test("shadow DOM, iframe and dialogs", { skip }, async () => {
   await p.context().close();
 });
 
-test("selector tester counts matches", { skip }, async () => {
-  const p = await open("selector-tester");
-  await tid(p, "st-selector").fill("li.item");
-  assert.equal(await tid(p, "st-count").textContent(), "3");
-  await tid(p, "st-mode").selectOption("xpath");
-  await tid(p, "st-selector").fill("//li[@data-price>2]");
-  assert.equal(await tid(p, "st-count").textContent(), "2");
+test("old selector tester URL redirects to the Locator Lab sandbox", { skip }, async () => {
+  const res = await fetch(URL + "/practice/selector-tester", { redirect: "manual" });
+  assert.equal(res.status, 301);
+  assert.equal(res.headers.get("location"), "/practice/locators?tab=sandbox");
+});
+
+test("Locator Lab detects locator kinds and verifies a solution", { skip }, async () => {
+  const p = await open("locators");
+  assert.ok((await p.locator("[data-testid^=lab-scenario-]").count()) >= 80, "expected 80+ scenarios");
+  const kindOf = async (loc, re) => { await tid(p, "lab-locator").fill(loc); await p.waitForFunction(([r]) => new RegExp(r, "i").test(document.querySelector("[data-testid=lab-kind-label]").textContent), [re.source], { timeout: 3000 }); };
+  await kindOf("page.getByRole('button', { name: 'Sign in' })", /Playwright/);
+  await kindOf("//button", /xpath/);
+  await kindOf("//td/following-sibling::td", /axes/);
+  await kindOf("button.btn", /css/);
+  assert.deepEqual(p.errors, []);
+  await p.context().close();
+});
+
+test("Locator Lab sandbox evaluates CSS, XPath and Playwright locators on pasted HTML", { skip }, async () => {
+  const p = await open("locators?tab=sandbox");
+  await tid(p, "lab-html").fill('<ul><li class="item">Apple</li><li class="item sale">Banana</li><li class="item">Cherry</li></ul>');
+  const expectCount = async (loc, n) => {
+    await tid(p, "lab-locator").fill(loc);
+    await p.waitForFunction(([want]) => new RegExp("^\\s*" + want + "\\b").test(document.querySelector("[data-testid=lab-result]").textContent), [n], { timeout: 4000 });
+  };
+  await expectCount("li.item", "3");
+  await expectCount("//li[contains(@class,'sale')]", "1");
+  await expectCount("page.getByRole('listitem').filter({ hasText: 'an' })", "1");
+  await expectCount("page.getByText('a', { exact: true })", "0");
+  await p.context().close();
+});
+
+test("cheat sheet filters entries and the pipeline builder generates YAML", { skip }, async () => {
+  let p = await open("locator-cheatsheet");
+  await tid(p, "cs-tab-xpath").click();
+  await tid(p, "cs-filter").fill("following-sibling");
+  assert.match(await tid(p, "cs-count").textContent(), /^[1-9]/);
+  await p.context().close();
+  p = await open("cicd-builder");
+  await tid(p, "pb-shard").check();
+  const out = await tid(p, "pb-output").textContent();
+  assert.match(out, /matrix:/); assert.match(out, /--shard=\$\{\{ matrix\.shard \}\}\/3/);
+  await tid(p, "pb-provider").selectOption("GitLab CI");
+  assert.match(await tid(p, "pb-output").textContent(), /parallel: 3/);
+  await p.context().close();
+});
+
+test("dynamic and flaky labs: lazy list, polling job and type-ahead", { skip }, async () => {
+  let p = await open("dynamic-lazy");
+  await tid(p, "load-more").click();
+  await p.waitForFunction(() => document.querySelector("[data-testid=more-count]").textContent === "Loaded 6 items");
+  await p.context().close();
+  p = await open("dynamic-progress");
+  await tid(p, "job-duration").selectOption("2000");
+  await tid(p, "job-start").click();
+  await p.waitForFunction(() => document.querySelector("[data-testid=job-bar]").getAttribute("aria-valuenow") === "100", null, { timeout: 8000 });
+  assert.match(await tid(p, "job-status").textContent(), /finished/);
+  await p.context().close();
+  p = await open("dynamic-autocomplete");
+  await tid(p, "ac-input").pressSequentially("play", { delay: 50 });
+  await p.getByRole("option", { name: "playwright" }).waitFor();
   await p.context().close();
 });
 

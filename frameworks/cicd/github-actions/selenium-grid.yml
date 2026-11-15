@@ -1,0 +1,37 @@
+# Selenium tests against a Selenium Grid service container (Chrome and Firefox).
+name: selenium-grid
+on:
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chrome, firefox]
+    services:
+      selenium:
+        image: selenium/standalone-${{ matrix.browser }}:latest
+        ports:
+          - 4444:4444
+        options: >-
+          --shm-size=2g
+          --health-cmd "curl -sf http://localhost:4444/wd/hub/status"
+          --health-interval 5s
+          --health-retries 12
+    env:
+      SELENIUM_REMOTE_URL: http://localhost:4444/wd/hub
+      BASE_URL: ${{ vars.BASE_URL || 'https://YOUR-TESTYARD-URL' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: pytest -n 2 --browser ${{ matrix.browser }} --base-url "$BASE_URL" --junitxml=results/junit.xml --html=results/report.html --self-contained-html
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: selenium-${{ matrix.browser }}
+          path: results

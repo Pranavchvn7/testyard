@@ -1,0 +1,47 @@
+# Azure Pipelines: browser matrix, JUnit results in the Tests tab, HTML report as an artifact.
+trigger:
+  branches:
+    include: [main]
+pr:
+  branches:
+    include: ["*"]
+schedules:
+  - cron: "30 20 * * *"
+    displayName: Nightly regression
+    branches:
+      include: [main]
+    always: true
+pool:
+  vmImage: ubuntu-latest
+variables:
+  BASE_URL: https://YOUR-TESTYARD-URL
+strategy:
+  matrix:
+    chromium:
+      BROWSER: chromium
+    firefox:
+      BROWSER: firefox
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: "22.x"
+  - script: npm ci
+    displayName: Install dependencies
+  - script: npx playwright install --with-deps $(BROWSER)
+    displayName: Install browser
+  - script: npx playwright test --project=$(BROWSER) --reporter=junit,html
+    displayName: Run tests
+    env:
+      BASE_URL: $(BASE_URL)
+      PLAYWRIGHT_JUNIT_OUTPUT_FILE: results/junit.xml
+  - task: PublishTestResults@2
+    condition: succeededOrFailed()
+    inputs:
+      testResultsFormat: JUnit
+      testResultsFiles: results/junit.xml
+      testRunTitle: Playwright $(BROWSER)
+  - task: PublishPipelineArtifact@1
+    condition: succeededOrFailed()
+    inputs:
+      targetPath: playwright-report
+      artifact: html-report-$(BROWSER)

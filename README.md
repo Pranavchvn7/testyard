@@ -1,16 +1,17 @@
 # TestYard — a free playground for practising QA automation
 
-TestYard is an open-source practice site for Selenium, Playwright, Cypress and API testers. It has **42 practice pages**, a **real sandboxed REST API**, four demo applications and copy-paste framework starters. Nothing to sign up for, nothing precious: break it.
+TestYard is an open-source practice site for Selenium, Playwright, Cypress and API testers. It has **69 practice pages**, a **real sandboxed REST API**, four demo applications, a **Locator Lab with 97 scenarios** (CSS, XPath, axes and every Playwright built-in locator) and deep framework + CI/CD guides. Nothing to sign up for, nothing precious: break it.
 
 | Area | What you get |
 |---|---|
 | **Web elements** (17) | Forms & validation, radios/checkboxes, dropdowns & autocomplete, date pickers, sliders, upload/download, JS dialogs & modals, hover, mouse & keyboard, drag & drop, iframes & windows, **shadow DOM**, tabs, toasts, infinite scroll, links & broken images, SVG |
 | **Tables & grids** (3) | Static, dynamic (column order shuffles on every load), 120-row grid with sort / filter / paginate / select / delete |
-| **Dynamic & timing** (5) | Async controls, hidden vs. late-rendered elements, flaky API and stale elements, slow images, unstable UI (typos, shifting layout) |
-| **Locators & DOM** (4) | Dynamic ids, challenging DOM, 2 500-cell table and 40-level tree, locator playground |
+| **Dynamic & timing** (15) | Async controls, hidden vs. late-rendered elements, flaky API and stale elements, slow images, unstable UI, a **Flaky test lab** (overlays, animations, races, stale handles, retries) and a diagnosis guide, lazy load / infinite scroll, polling and progress bars, type-ahead race conditions, lazy tabs, changing states, network waits |
+| **Locators & DOM** (5) | Dynamic ids, challenging DOM, 2 500-cell table and 40-level tree, the **Locator Lab** (95+ scenarios, live match checking, locator-kind detection, click-to-get-locators, your-own-HTML sandbox) and a searchable **locator cheat sheet** (CSS, XPath functions & axes, Playwright locators & methods, Selenium) |
+| **Playwright lab** (12) | Actionability, web-first assertions, network mocking, API testing, auth & storageState, multi-context, frames & shadow, dialogs / downloads / uploads, keyboard & mouse, clock, emulation, visual & accessibility, test runner, patterns |
 | **Demo apps** (5) | Login/register/forgot/OTP, Notes (CRUD), E-commerce shop (cart → order), 4-step flight booking, BMI / password / tip calculators |
 | **API lab** (3) | Live OpenAPI reference, Postman-style request console, API test challenge checklist |
-| **Learning & tools** (5) | Framework roadmap + starters, cheatsheet (Playwright / Selenium / Cypress), XPath & CSS tester, HTTP/browser diagnostics, cookies/storage/console/errors |
+| **Learning & tools** (9) | 22-step framework roadmap with Playwright (TS and JS), Selenium (Python and Java), Cypress, API, BDD, k6, axe and visual starters plus a maturity checklist; CI/CD concepts, GitHub Actions, Jenkins / GitLab / Azure / CircleCI / Bitbucket, Docker & reports, a **pipeline builder** that generates YAML; the Playwright / Selenium / Cypress cheatsheet, HTTP/browser diagnostics, cookies/storage/console/errors |
 
 Every interactive element has a stable `data-testid` (and sensible ids, names and ARIA), and each page lists **practice tasks**.
 
@@ -93,7 +94,10 @@ api/core.js          the REST API (routes, validation, sandboxes, rate limits, O
 public/              the single-page app (clean-URL routing, vanilla JS modules)
   js/pages/*.js      one module per group of practice pages
 tests/               API, security/SEO and Playwright smoke tests
-frameworks/playwright  runnable Playwright starter that targets TestYard
+frameworks/playwright  runnable Playwright starter that targets TestYard (+ CI workflow examples)
+frameworks/selenium-python  runnable Selenium + pytest starter
+frameworks/cicd        Jenkinsfile, GitLab, Azure, CircleCI, Bitbucket, Docker and compose files
+public/js/locator-engine.js  the CSS / XPath / Playwright locator evaluator behind the Locator Lab (no dependencies)
 ```
 
 ## Adding a practice page

@@ -1,0 +1,34 @@
+# Bitbucket Pipelines: parallel steps per browser, artifacts for reports.
+image: mcr.microsoft.com/playwright:v1.49.1-noble
+definitions:
+  steps:
+    - step: &e2e
+        name: E2E
+        caches: [node]
+        script:
+          - npm ci
+          - npx playwright test --project=$BROWSER
+        artifacts:
+          - playwright-report/**
+          - test-results/**
+pipelines:
+  pull-requests:
+    "**":
+      - parallel:
+          - step:
+              <<: *e2e
+              name: E2E chromium
+              script:
+                - export BROWSER=chromium
+                - npm ci
+                - npx playwright test --project=chromium
+          - step:
+              <<: *e2e
+              name: E2E firefox
+              script:
+                - export BROWSER=firefox
+                - npm ci
+                - npx playwright test --project=firefox
+  custom:
+    nightly:
+      - step: *e2e

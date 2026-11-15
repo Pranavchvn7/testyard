@@ -3,6 +3,7 @@ export const GROUPS = [
   { id: "tables", title: "Tables & grids", blurb: "Static, dynamic and paginated data grids with sorting and filtering." },
   { id: "dynamic", title: "Dynamic & timing", blurb: "Waits, flaky behaviour, slow resources and elements that move." },
   { id: "dom", title: "Locators & DOM", blurb: "Tricky selectors, changing IDs and very large DOM trees." },
+  { id: "playwright", title: "Playwright lab", blurb: "Auto-waiting, network mocking, tracing, fixtures, clocks and every other Playwright topic." },
   { id: "apps", title: "Demo applications", blurb: "Login, notes, shop and booking apps for end-to-end flows." },
   { id: "api", title: "API lab", blurb: "A real sandboxed REST API, live docs and a request console." },
   { id: "learn", title: "Frameworks & learning", blurb: "Build a full automation framework step by step." },
