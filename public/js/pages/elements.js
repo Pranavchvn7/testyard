@@ -240,7 +240,7 @@ page({
 page({
   id: "files", group: "elements", title: "File upload & download",
   blurb: "Single and multiple upload with type/size validation, a drop zone, real server upload and genuine file downloads.",
-  tasks: ["Upload a .png with setInputFiles and assert it appears in the list.", "Upload a file over 1 MB and assert the error.", "Upload a .exe and assert it is rejected.", "Click each download link and assert the downloaded file name and contents.", "Send the files to the server and assert the 201 response."],
+  tasks: ["Upload a .png with setInputFiles and assert it appears in the list.", "Upload a file over 1 MB and assert the error.", "Upload a .exe and assert it is rejected.", "Click each download link and assert the downloaded file name and contents.", "Send the files to the server and assert the 201 response.", "After clicking Upload to server, assert the upload-success confirmation and the uploaded-item entries."],
   render(root) {
     const files = [];
     const list = h("ul", { "data-testid": "file-list", style: { paddingLeft: "18px" } });
@@ -263,11 +263,25 @@ page({
     drop.addEventListener("dragover", (e) => { e.preventDefault(); drop.classList.add("over"); });
     drop.addEventListener("dragleave", () => drop.classList.remove("over"));
     drop.addEventListener("drop", (e) => { e.preventDefault(); drop.classList.remove("over"); add([...e.dataTransfer.files]); });
+    const confirmBox = h("div", { "data-testid": "upload-confirmation", role: "status", "aria-live": "polite" });
     const send = h("button", { class: "btn primary", type: "button", "data-testid": "upload-send", onClick: async () => {
       if (!files.length) { toast("Add a file first", "warn"); return; }
       const fd = new FormData(); files.forEach((f) => fd.append("files", f, f.name));
+      send.disabled = true; send.textContent = "Uploading…";
+      confirmBox.replaceChildren(h("div", { class: "alert info", "data-testid": "upload-progress", text: "Uploading…" }));
       const r = await api("POST", "/api/upload", fd);
+      send.disabled = false; send.textContent = "Upload to server";
       srv.textContent = `HTTP ${r.status}\n` + pretty(r.data);
+      if (r.status === 201) {
+        const sent = r.data?.data?.files || [];
+        confirmBox.replaceChildren(h("div", { class: "alert ok", "data-testid": "upload-success" },
+          h("strong", { "data-testid": "upload-success-title", text: `Upload successful: ${sent.length} file${sent.length === 1 ? "" : "s"} uploaded` }),
+          h("ul", { "data-testid": "uploaded-list", style: { margin: "6px 0 0", paddingLeft: "18px" } }, sent.map((f) => h("li", { "data-testid": "uploaded-item", text: `${f.filename} (${f.size} bytes)` })))));
+        files.length = 0; msg.replaceChildren(); list.replaceChildren();
+        toast("Upload successful", "ok");
+      } else {
+        confirmBox.replaceChildren(h("div", { class: "alert bad", role: "alert", "data-testid": "upload-failed", text: `Upload failed (HTTP ${r.status}): ${r.data?.message || "unknown error"}` }));
+      }
     } }, "Upload to server");
     const blobDl = h("button", { class: "btn", type: "button", "data-testid": "download-blob", onClick: () => {
       const a = h("a", { href: URL.createObjectURL(new Blob(["generated in the browser at " + new Date().toISOString()], { type: "text/plain" })), download: "generated.txt" });
@@ -275,7 +289,7 @@ page({
     } }, "Generate & download (blob)");
     const BASE = (window.TESTYARD_API_BASE || "").replace(/\/$/, "");
     root.append(h("div", { class: "grid g2" },
-      stage(h("h2", { text: "Upload" }), field("Choose files (png, jpg, pdf, txt, csv · max 1 MB)", input), drop, msg, list, h("div", { class: "row", style: { marginTop: "12px" } }, send), h("div", { class: "result" }, srv)),
+      stage(h("h2", { text: "Upload" }), field("Choose files (png, jpg, pdf, txt, csv · max 1 MB)", input), drop, msg, list, h("div", { class: "row", style: { marginTop: "12px" } }, send), confirmBox, h("div", { class: "result" }, srv)),
       stage(h("h2", { text: "Download" }), h("div", { class: "stack" },
         ["sample.csv", "sample.json", "sample.txt"].map((n) => h("div", {}, h("a", { class: "btn", href: `${BASE}/api/files/${n}`, download: n, "data-testid": "download-" + n.replace(".", "-") }, "⬇ " + n))), blobDl,
         h("p", { class: "hint", text: "The first three are served by the API with Content-Disposition: attachment." })))));

@@ -5,17 +5,17 @@
 # TestYard
 
 **A free, open-source playground for Playwright, Selenium, Cypress and API testers.**
-69 practice pages · a real sandboxed REST API · a 97-scenario Locator Lab · flaky and dynamic labs · framework and CI/CD guides.
+70 practice pages · a real sandboxed REST API · a 97-scenario Locator Lab · flaky and dynamic labs · framework and CI/CD guides.
 
 ![Node](https://img.shields.io/badge/node-%E2%89%A518-4338ca?style=flat-square)
 ![Dependencies](https://img.shields.io/badge/runtime%20deps-0-0f766e?style=flat-square)
-![Practice pages](https://img.shields.io/badge/practice%20pages-69-4338ca?style=flat-square)
+![Practice pages](https://img.shields.io/badge/practice%20pages-70-4338ca?style=flat-square)
 ![API routes](https://img.shields.io/badge/API%20routes-45-0e7490?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-64748b?style=flat-square)
 
 [Quick start](#quick-start) · [What you can practise](#what-you-can-practise) · [Learning paths](#learning-paths) · [Locator Lab](#locator-lab) · [API](#the-api) · [How to use it](#how-to-use-it-effectively) · [Architecture](#architecture) · [Security](#security) · [Contributing](#contributing)
 
-**Live demo:** `https://testyard.onrender.com/`
+**Live demo:** `<add your deployed URL here>`
 
 </div>
 
@@ -83,7 +83,7 @@ test("log in on the practice site", async ({ page }) => {
 | **Tables and grids** | 3 | Static, dynamic (column order shuffles on each load), 120-row grid with sort, filter, paginate, select, delete |
 | **Dynamic and timing** | 15 | Async controls, hidden vs late-rendered elements, flaky API and stale elements, slow images, unstable UI, a **flaky test lab** with a diagnosis guide, lazy loading, polling and progress bars, type-ahead races, lazy tabs, changing states, network waits |
 | **Locators and DOM** | 5 | Dynamic ids, challenging DOM, 2,500-cell table and 40-level tree, the **Locator Lab**, and a searchable **locator cheat sheet** |
-| **Playwright lab** | 12 | Actionability, web-first assertions, network mocking, API testing, auth and storageState, multi-context, frames and shadow DOM, dialogs/downloads/uploads, keyboard and mouse, clock control, emulation, visual and accessibility testing |
+| **Playwright lab** | 13 | Actionability, web-first assertions, **fixtures (test scope, worker scope, page objects)**, network mocking, API testing, auth and storageState, multi-context, frames and shadow DOM, dialogs/downloads/uploads, keyboard and mouse, clock control, emulation, visual and accessibility testing |
 | **Demo apps** | 5 | Login/register/forgot/OTP, Notes (CRUD), e-commerce shop (cart to order), 4-step flight booking, calculators |
 | **API lab** | 3 | Live OpenAPI reference, Postman-style request console, API test challenge checklist |
 | **Learning and tools** | 9 | 22-step framework roadmap with starters (Playwright TS/JS, Selenium Python/Java, Cypress, API, BDD, k6, axe, visual), CI/CD guides (GitHub Actions, Jenkins, GitLab, Azure, CircleCI, Bitbucket, Docker and reports), a **pipeline builder** that generates YAML, tool cheatsheet, HTTP/browser diagnostics |

@@ -252,6 +252,55 @@ test("both colour themes keep text readable", { skip }, async () => {
   }
 });
 
+test("file upload shows a confirmation after the upload is clicked", { skip }, async () => {
+  const p = await open("files");
+  await p.getByTestId("upload-send").click();
+  assert.equal(await p.getByTestId("upload-confirmation").getByTestId("upload-success").count(), 0);
+  await p.getByTestId("file-input").setInputFiles([{ name: "notes.txt", mimeType: "text/plain", buffer: Buffer.from("hello") }, { name: "data.csv", mimeType: "text/csv", buffer: Buffer.from("a,b") }]);
+  await p.getByTestId("upload-send").click();
+  await p.getByTestId("upload-success").waitFor();
+  assert.match(await p.getByTestId("upload-success-title").textContent(), /Upload successful: 2 files uploaded/);
+  assert.deepEqual(await p.getByTestId("uploaded-item").allTextContents(), ["notes.txt (5 bytes)", "data.csv (3 bytes)"]);
+  assert.equal(await p.getByTestId("file-item").count(), 0);
+  await p.context().close();
+});
+
+test("fixtures page: scope simulator and todo app", { skip }, async () => {
+  const p = await open("playwright-fixtures");
+  await p.getByTestId("fx-tab-scopes").click();
+  const run = async () => { await p.getByTestId("sim-run").click(); await p.waitForFunction(() => /^Done:/.test(document.querySelector('[data-testid="sim-status"]').textContent), null, { timeout: 15000 }); };
+  await p.getByTestId("sim-workers").selectOption("2");
+  await run();
+  assert.equal(await p.getByTestId("count-db-setups").textContent(), "2");
+  assert.equal(await p.getByTestId("count-db-teardowns").textContent(), "2");
+  assert.equal(await p.getByTestId("count-test-setups").textContent(), "6");
+  await p.getByTestId("sim-scope").selectOption("test");
+  await run();
+  assert.equal(await p.getByTestId("count-db-setups").textContent(), "6");
+  await p.getByTestId("sim-scope").selectOption("worker");
+  await p.getByTestId("sim-parallel").uncheck();
+  await run();
+  assert.equal(await p.getByTestId("count-db-setups").textContent(), "1");
+  assert.equal(await p.getByTestId("sim-log-w2").count(), 0);
+  await p.getByTestId("sim-parallel").check();
+  await p.getByTestId("sim-fail3").check();
+  await run();
+  assert.equal(await p.getByTestId("count-workers-started").textContent(), "3");
+  await p.getByTestId("fx-tab-pom-fixtures").click();
+  await p.getByTestId("todo-input").fill("Write fixtures");
+  await p.getByTestId("todo-add").click();
+  await p.getByTestId("todo-input").fill("Review PR");
+  await p.getByTestId("todo-input").press("Enter");
+  assert.equal(await p.getByTestId("todo-item").count(), 2);
+  await p.getByTestId("todo-item").filter({ hasText: "Write fixtures" }).getByTestId("todo-check").check();
+  assert.equal(await p.getByTestId("todo-count").textContent(), "1 item left");
+  await p.getByTestId("todo-input").fill("review pr");
+  await p.getByTestId("todo-add").click();
+  assert.equal(await p.getByTestId("todo-error").textContent(), "That todo already exists");
+  assert.deepEqual(p.errors, []);
+  await p.context().close();
+});
+
 test("API console sends a request", { skip }, async () => {
   const p = await open("api-console");
   await tid(p, "c-url").fill("/api/status/418");
